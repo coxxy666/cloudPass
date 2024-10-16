@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import React, { useEffect, useState }  from 'react';
 import {Navbar, Nav, ProgressBar} from 'react-bootstrap';
 import './index.css'; 
-import adminDashboard from ./private/admin.js
+import adminDashboard from ../private/admin.js
 const questions = [
     {
         question: 'How would a system administrator add an additional layer of login security to a user\'s AWS Management Console?',
