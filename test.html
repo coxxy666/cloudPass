@@ -1,0 +1,104 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from 'react';
+import { Navbar, Nav, Button } from 'react-bootstrap';
+import './index.css';
+
+// Navbar Component
+const Nav_bar = () => {
+  return (
+    <Navbar expand='lg'>
+      <Navbar.Brand>Ezeiyoke Cosmas</Navbar.Brand>
+      <Navbar.Toggle />
+      <Navbar.Collapse>
+        <Nav className='me-auto nav_nav'>
+          <Nav.Link className='nav_text' href='#'>Home</Nav.Link>
+          <Nav.Link className='nav_text' href='#'>Instructions</Nav.Link>
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+  );
+};
+
+// BodyContent Component
+const Bodycontent = () => {
+  // State to manage whether the answer is shown (isFlipped)
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  // Handle form submission (flipping the question to answer)
+  const handleSubmit = () => {
+    setIsFlipped(true);
+  };
+
+  return (
+    <div>
+      {/* Question Section */}
+      <div className='container question-cont' style={{ display: isFlipped ? 'none' : 'block' }}>
+        <div className='row mb-4 question-row'>
+          <div className='col-lg-6 timer'>
+            <div className='total-time'><h6>Total Time</h6></div>
+            <div className='progress progress-rule' role='progressbar'></div>
+          </div>
+          <div className='col-lg-6 question'>
+            <h5 className='score'>0/65</h5>
+            <h6>The best database storage</h6>
+            <div className='option'>
+              <ul className='option-list'>
+                <li className='options1'>
+                  <label>A. Rds <input type='radio' name='option' /></label>
+                </li>
+                <li className='options1'>
+                  <label>B. Dyanmo <input type='radio' name='option' /></label>
+                </li>
+                <li className='options1'>
+                  <label>C. Athen <input type='radio' name='option' /></label>
+                </li>
+                <li className='options1'>
+                  <label>D. EMR <input type='radio' name='option' /></label>
+                </li>
+              </ul>
+            </div>
+            <div className='col-lg-12 move-button'>
+              <Button className='btn-block submit-block' onClick={handleSubmit}>Submit</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Answer Section */}
+      <div className='container answer-cont' style={{ display: isFlipped ? 'block' : 'none' }}>
+        <div className='row mb-4 answer-row'>
+          <div className='col-lg-6 question-answer'>
+            <h4>ANSWER</h4>
+            <h6>The best database storage</h6>
+            <div className='answer'>
+              <ul className='answer-list'>
+                <li className='options2'>A. Rds <span>&#10003;</span></li>
+                <li className='options2'>B. Dyanmo <span>&#10005;</span></li>
+                <li className='options2'>C. Athen <span>&#10005;</span></li>
+                <li className='options2'>D. EMR <span>&#10005;</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation buttons */}
+      <div className='col-lg-12 move-button'>
+        <button className='btn-block prev-block'>PREV</button>
+        <button className='btn-block next-block'>NEXT</button>
+      </div>
+    </div>
+  );
+}
+
+// App Component
+function App() {
+  return (
+    <div className='app'>
+      <Nav_bar />
+      <Bodycontent />
+    </div>
+  );
+}
+
+export default App;
