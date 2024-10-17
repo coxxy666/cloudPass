@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import React, { useEffect, useState }  from 'react';
 import {Navbar, Nav, ProgressBar} from 'react-bootstrap';
-import './index.css'; 
+import '../private/index.css'; 
 
 const adminDashboard = () =>{
 
@@ -44,8 +44,8 @@ const handleChange = (e) => {
 
 }
 
-const [correctAnswer, setCorrectAnswers]
-const [explanation, setExplanation]
+const [correctAnswer, setCorrectAnswers] = (useState)
+const [explanation, setExplanation] = (useState)
 
 const onCorrectAnswer = (e) => {
     setCorrectAnswers(e.target.value)

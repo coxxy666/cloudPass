@@ -1,104 +1,153 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState } from 'react';
-import { Navbar, Nav, Button } from 'react-bootstrap';
-import './index.css';
+import '../index.css'; 
 
-// Navbar Component
-const Nav_bar = () => {
-  return (
-    <Navbar expand='lg'>
-      <Navbar.Brand>Ezeiyoke Cosmas</Navbar.Brand>
-      <Navbar.Toggle />
-      <Navbar.Collapse>
-        <Nav className='me-auto nav_nav'>
-          <Nav.Link className='nav_text' href='#'>Home</Nav.Link>
-          <Nav.Link className='nav_text' href='#'>Instructions</Nav.Link>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
-  );
-};
+const AdminDashboard = () => {
+  const [questionIn, setQuestionData] = useState({
+    question: '',
+    option1: '',
+    option2: '',
+    option3: '',
+    option4: '',
+    option5: ''
+  });
 
-// BodyContent Component
-const Bodycontent = () => {
-  // State to manage whether the answer is shown (isFlipped)
-  const [isFlipped, setIsFlipped] = useState(false);
+  // New state to handle explanations for each option
+  const [explanations, setExplanations] = useState({
+    option1: '',
+    option2: '',
+    option3: '',
+    option4: '',
+    option5: ''
+  });
 
-  // Handle form submission (flipping the question to answer)
-  const handleSubmit = () => {
-    setIsFlipped(true);
+  const [correctAnswer, setCorrectAnswer] = useState('');
+
+  // Handle question and options input
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setQuestionData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
+
+  // Handle explanations input
+  const handleExplanationChange = (e) => {
+    const { id, value } = e.target;
+    setExplanations((prevExplanations) => ({
+      ...prevExplanations,
+      [id]: value,
+    }));
+  };
+
+  const handleCorrectAnswerChange = (e) => {
+    setCorrectAnswer(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Collect data on form submission
+    const submittedData = {
+      ...questionIn,
+      correctAnswer,
+      explanations
+    };
+
+    console.log('Submitted Question Data: ', submittedData);
+
+    // Reset form fields
+    setQuestionData({
+      question: '',
+      option1: '',
+      option2: '',
+      option3: '',
+      option4: '',
+      option5: '',
+    });
+    setExplanations({
+      option1: '',
+      option2: '',
+      option3: '',
+      option4: '',
+      option5: '',
+    });
+    setCorrectAnswer('');
   };
 
   return (
-    <div>
-      {/* Question Section */}
-      <div className='container question-cont' style={{ display: isFlipped ? 'none' : 'block' }}>
-        <div className='row mb-4 question-row'>
-          <div className='col-lg-6 timer'>
-            <div className='total-time'><h6>Total Time</h6></div>
-            <div className='progress progress-rule' role='progressbar'></div>
-          </div>
-          <div className='col-lg-6 question'>
-            <h5 className='score'>0/65</h5>
-            <h6>The best database storage</h6>
-            <div className='option'>
-              <ul className='option-list'>
-                <li className='options1'>
-                  <label>A. Rds <input type='radio' name='option' /></label>
-                </li>
-                <li className='options1'>
-                  <label>B. Dyanmo <input type='radio' name='option' /></label>
-                </li>
-                <li className='options1'>
-                  <label>C. Athen <input type='radio' name='option' /></label>
-                </li>
-                <li className='options1'>
-                  <label>D. EMR <input type='radio' name='option' /></label>
-                </li>
-              </ul>
-            </div>
-            <div className='col-lg-12 move-button'>
-              <Button className='btn-block submit-block' onClick={handleSubmit}>Submit</Button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="container mt-5">
+      <h2>Admin Dashboard - Add Questions</h2>
+      <form onSubmit={handleSubmit}>
 
-      {/* Answer Section */}
-      <div className='container answer-cont' style={{ display: isFlipped ? 'block' : 'none' }}>
-        <div className='row mb-4 answer-row'>
-          <div className='col-lg-6 question-answer'>
-            <h4>ANSWER</h4>
-            <h6>The best database storage</h6>
-            <div className='answer'>
-              <ul className='answer-list'>
-                <li className='options2'>A. Rds <span>&#10003;</span></li>
-                <li className='options2'>B. Dyanmo <span>&#10005;</span></li>
-                <li className='options2'>C. Athen <span>&#10005;</span></li>
-                <li className='options2'>D. EMR <span>&#10005;</span></li>
-              </ul>
-            </div>
-          </div>
+        {/* Question */}
+        <div className="mb-3">
+          <label htmlFor="question" className="form-label">Question</label>
+          <input
+            type="text"
+            className="form-control"
+            id="question"
+            value={questionIn.question}
+            onChange={handleChange}
+            placeholder="Enter the question"
+          />
         </div>
-      </div>
 
-      {/* Navigation buttons */}
-      <div className='col-lg-12 move-button'>
-        <button className='btn-block prev-block'>PREV</button>
-        <button className='btn-block next-block'>NEXT</button>
-      </div>
+        {/* Options */}
+        {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+          <div key={index} className="mb-3">
+            <label htmlFor={option} className="form-label">Option {index + 1}</label>
+            <input
+              type="text"
+              className="form-control"
+              id={option}
+              value={questionIn[option]}
+              onChange={handleChange}
+              placeholder={`Enter option ${index + 1}`}
+            />
+          </div>
+        ))}
+
+        {/* Correct Answer Selection */}
+        <div className="mb-3">
+          <label htmlFor="correctAnswer" className="form-label">Select the Correct Answer</label>
+          <select
+            className="form-control"
+            id="correctAnswer"
+            value={correctAnswer}
+            onChange={handleCorrectAnswerChange}
+          >
+            <option value="" disabled>Select correct answer</option>
+            {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+              <option key={index} value={questionIn[option]}>
+                {questionIn[option]}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Explanations for Each Option */}
+        {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+          <div key={index} className="mb-3">
+            <label htmlFor={option} className="form-label">Explanation for Option {index + 1}</label>
+            <textarea
+              className="form-control"
+              id={option}
+              value={explanations[option]}
+              onChange={handleExplanationChange}
+              rows="2"
+              placeholder={`Explain why option ${index + 1} is correct or incorrect`}
+            />
+          </div>
+        ))}
+
+        {/* Submit Button */}
+        <button type="submit" className="btn btn-primary">Submit</button>
+
+      </form>
     </div>
   );
-}
+};
 
-// App Component
-function App() {
-  return (
-    <div className='app'>
-      <Nav_bar />
-      <Bodycontent />
-    </div>
-  );
-}
-
-export default App;
+export default AdminDashboard;
