@@ -19,15 +19,14 @@ const AdminDashboard = () => {
     option4: '',
     option5: ''
   });
+
   const [correctAnswer, setCorrectAnswer] = useState('');
-  
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-
+    const { name, value } = e.target;
     setQuestionData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [name]: value,
     }));
   };
 
@@ -35,85 +34,114 @@ const AdminDashboard = () => {
     setCorrectAnswer(e.target.value);
   };
 
- 
-    const handleExplanationChange = (e) => {
-        const { id, value } = e.target;
-        setExplanation((prevExplanations) => ({
-          ...prevExplanations,
-          [id]: value,
-        }));
-      };
-  
+  const handleExplanationChange = (e) => {
+    const { name, value } = e.target;
+    setExplanation((prevExplanations) => ({
+      ...prevExplanations,
+      [name]: value,
+    }));
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Collect data on form submission
+    // Simple validation
+    if (!questionIn.question || !correctAnswer) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    const options = [
+      questionIn.option1,
+      questionIn.option2,
+      questionIn.option3,
+      questionIn.option4,
+      questionIn.option5,
+    ];
+
     const submittedData = {
-      ...questionIn,
+      question: questionIn.question,
+      options,
       correctAnswer,
       explanation,
     };
 
-    console.log('Submitted Question Data: ', submittedData);
+    try {
+      const response = await fetch('http://localhost:3001/upload-question', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submittedData),
+      });
 
-    // Reset form fields
-    setQuestionData({
-      question: '',
-      option1: '',
-      option2: '',
-      option3: '',
-      option4: '',
-      option5: '',
-    });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
 
-    setExplanation({
+      const result = await response.json();
+      console.log(result); // Log success message
+
+      // Reset form fields
+      setQuestionData({
+        question: '',
         option1: '',
         option2: '',
         option3: '',
         option4: '',
         option5: '',
       });
+      setExplanation({
+        option1: '',
+        option2: '',
+        option3: '',
+        option4: '',
+        option5: '',
+      });
+      setCorrectAnswer('');
 
-    setCorrectAnswer('');
-    setExplanation('');
+      alert(result.message); // Show success message in UI
+
+    } catch (error) {
+      console.error('Error uploading question:', error);
+      alert('Failed to upload question, please try again.');
+    }
   };
 
   return (
     <div className="container mt-5">
       <h2>Admin Dashboard - Add Questions</h2>
       <form onSubmit={handleSubmit}>
-
         {/* Question */}
         <div className="mb-3">
           <label htmlFor="question" className="form-label">Question</label>
           <input
             type="text"
             className="form-control"
-            id="question"
+            name="question"
             value={questionIn.question}
             onChange={handleChange}
             placeholder="Enter the question"
           />
         </div>
+                {/* Options */}
+                {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+  <div key={index} className="mb-3">
+    <label htmlFor={option} className="form-label">Option {index + 1}</label>
+    <input
+      type="text"
+      className="form-control"
+      name={option}  // Use name instead of id here
+      value={questionIn[option]}
+      onChange={handleChange}
+      placeholder={`Enter option ${index + 1}`}
+    />
+  </div>
+))}
 
-        {/* Options */}
-        {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
-          <div key={index} className="mb-3">
-            <label htmlFor={option} className="form-label">Option {index + 1}</label>
-            <input
-              type="text"
-              className="form-control"
-              id={option}
-              value={questionIn[option]}
-              onChange={handleChange}
-              placeholder={`Enter option ${index + 1}`}
-            />
-          </div>
-        ))}
 
-           {/* Correct Answer Selection */}
-           <div className="mb-3">
+               {/* Correct Answer Selection */}
+        <div className="mb-3">
           <label htmlFor="correctAnswer" className="form-label">Select the Correct Answer</label>
           <select
             className="form-control"
@@ -130,8 +158,19 @@ const AdminDashboard = () => {
           </select>
         </div>
 
-        {/* Explanations for Each Option */}
-        {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+        {/* Options and Explanations */}
+        {/* {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
+          <div key={index} className="mb-3">
+            <label htmlFor={option} className="form-label">Option {index + 1}</label>
+            <textarea
+              type="text"
+              className="form-control"
+              name={option}
+              value={questionIn[option]}
+              onChange={handleChange}
+              placeholder={`Enter option ${index + 1}`}
+            /> */}
+              {['option1', 'option2', 'option3', 'option4', 'option5'].map((option, index) => (
           <div key={index} className="mb-3">
             <label htmlFor={option} className="form-label">Explanation for Option {index + 1}</label>
             <textarea
@@ -144,10 +183,20 @@ const AdminDashboard = () => {
             />
           </div>
         ))}
+            {/* <label htmlFor={`explanation-${option}`} className="form-label">Explanation for Option {index + 1}</label>
+            <textarea
+              className="form-control"
+              name={option}
+              value={explanation[option]}
+              onChange={handleExplanationChange}
+              rows="2"
+              placeholder={`Explain why option ${index + 1} is correct or incorrect`}
+            /> */}
+
+   
 
         {/* Submit Button */}
         <button type="submit" className="btn btn-primary">Submit</button>
-
       </form>
     </div>
   );

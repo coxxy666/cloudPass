@@ -5,31 +5,6 @@ import { Navbar, Nav, ProgressBar } from 'react-bootstrap'; // Bootstrap compone
 import './index.css'; // Your custom styles
 import AdminDashboard from './private/admin.js'; // Import the admin component
 
-const questions = [
-  {
-    question: 'How would a system administrator add an additional layer of login security to a user\'s AWS Management Console?',
-    options: ['A. Use Amazon Cloud Directory', 'B. Audit AWS Identity and Access Management (IAM) roles', 'C. Enable multi-factor authentication', 'D. Enable AWS CloudTrail'],
-    correctAnswer: 'C. Enable multi-factor authentication',
-    explanation: {
-      'A': 'Cloud Directory is not related to login security.',
-      'B': 'Auditing IAM roles does not add an extra security layer.',
-      'C': 'Multi-factor authentication adds an extra layer of security.',
-      'D': 'CloudTrail is for logging actions, not securing login.',
-    },
-  },
-  {
-    question: 'Which service can identify the user that made the API call when an Amazon EC2 instance is terminated?',
-    options: ['AWS Trusted Advisor', 'AWS CloudTrail', 'AWS X-Ray', 'AWS Identity and Access Management (AWS IAM)'],
-    correctAnswer: 'B. AWS CloudTrail',
-    explanation: {
-      'A': 'Trusted Advisor is for best practices, not user identification.',
-      'B': 'CloudTrail tracks user actions, including API calls.',
-      'C': 'X-Ray is for debugging, not tracking user actions.',
-      'D': 'IAM controls permissions, not user activity logging.',
-    },
-  },
-];
-
 const Nav_bar = () => {
   return (
     <Navbar expand='lg'>
@@ -46,13 +21,21 @@ const Nav_bar = () => {
 };
 
 const Bodycontent = () => {
+  const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [isFlipped, setIsFlipped] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(80 * 60);
-  const [progress, setProgress] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
+
+  useEffect(() => {
+    // Fetch questions from the backend
+    fetch('http://localhost:3001/questions') // Replace with your actual backend API URL
+      .then(response => response.json())
+      .then(data => setQuestions(data)) // Assume the data is an array of questions
+      .catch(error => console.error('Error fetching questions:', error));
+  }, []);
 
   const handleOptionChange = (e) => {
     setSelectedAnswer(e.target.value);
@@ -66,8 +49,9 @@ const Bodycontent = () => {
       if (selectedAnswer === questions[currentQuestion].correctAnswer) {
         setCorrectAnswers((prevCorrect) => {
           const updatedCorrect = prevCorrect + 1;
-          setProgress((updatedCorrect / questions.length) * 100);
-          setTotalScore((prevScore) => prevScore + 1);
+          // console.log("Correct answers: ", updatedCorrect);
+          // setTotalScore((prevScore) => prevScore + 1);
+          // console.log("totlascore: ", updatedCorrect);
           return updatedCorrect;
         });
       }
@@ -80,7 +64,7 @@ const Bodycontent = () => {
       setSelectedAnswer('');
       setIsFlipped(false);
     } else {
-      alert(`You've completed the quiz! Your total score is ${totalScore}/${questions.length}`);
+      alert(`You've completed the quiz! Your total score is ${correctAnswers}/${questions.length}`);
     }
   };
 
@@ -104,6 +88,7 @@ const Bodycontent = () => {
         return prevTime - 1;
       });
     }, 1000);
+    return () => clearInterval(countDown); // Cleanup
   }, []);
 
   const formatTime = (timeInSeconds) => {
@@ -116,7 +101,7 @@ const Bodycontent = () => {
 
   return (
     <div>
-      {!isFlipped && (
+      {!isFlipped && questions.length > 0 && (
         <div className='container question-cont'>
           <div className='row mb-4 question-row'>
             <div className='col-lg-6 timer'>
@@ -132,7 +117,7 @@ const Bodycontent = () => {
 
             <div className='row mb-2'>
               <div className='col-lg-6 question'>
-                <h5 className="score">{currentQuestion + 1}/65</h5>
+                <h5 className="score">{currentQuestion + 1}/{questions.length}</h5>
                 <h6>{questions[currentQuestion].question}</h6>
                 <div className='option'>
                   <ul className="option-list">
