@@ -28,12 +28,26 @@ const Bodycontent = () => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(80 * 60);
   const [totalScore, setTotalScore] = useState(0);
+  const MAX_QUESTIONS = 65;
 
+  const shuffleArray = (array) => {
+    for (let i = array.length -1 ; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   useEffect(() => {
     // Fetch questions from the backend
     fetch('http://localhost:3001/questions') // Replace with your actual backend API URL
       .then(response => response.json())
-      .then(data => setQuestions(data)) // Assume the data is an array of questions
+      // .then(data => setQuestions(data)) // Assume the data is an array of questions
+      .then(data => {
+        // Shuffle the questions and limit them to MAX_QUESTIONS
+        const shuffledQuestions = shuffleArray(data);
+        const limitedQuestions = shuffledQuestions.slice(0, MAX_QUESTIONS);
+        setQuestions(limitedQuestions);
+      })
       .catch(error => console.error('Error fetching questions:', error));
   }, []);
 

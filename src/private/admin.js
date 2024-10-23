@@ -175,7 +175,7 @@ const AdminDashboard = () => {
             <label htmlFor={option} className="form-label">Explanation for Option {index + 1}</label>
             <textarea
               className="form-control"
-              id={option}
+              name={option}
               value={explanation[option]}
               onChange={handleExplanationChange}
               rows="2"
